@@ -7,13 +7,24 @@
     android:layout_height="match_parent"
     tools:context=".SeleccionNombreActivity">
 
+    <TextView
+        android:id="@+id/textoJ3"
+        android:layout_width="318dp"
+        android:layout_height="28dp"
+        android:text="J3 selecciona tu nombre"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerJ3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerJ2" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerJ4"
         android:layout_width="314dp"
         android:layout_height="93dp"
-        android:layout_marginBottom="120dp"
+        android:layout_marginBottom="124dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -29,9 +40,10 @@
         android:id="@+id/recyclerJ2"
         android:layout_width="314dp"
         android:layout_height="93dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginBottom="56dp"
         app:layout_constraintBottom_toTopOf="@+id/recyclerJ3"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -42,4 +54,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textoJ1"
+        android:layout_width="318dp"
+        android:layout_height="28dp"
+        android:text="J1 selecciona tu nombre"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerJ1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textoJ2"
+        android:layout_width="318dp"
+        android:layout_height="28dp"
+        android:text="J2 selecciona tu nombre"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerJ2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerJ1" />
+
+    <TextView
+        android:id="@+id/textoJ4"
+        android:layout_width="318dp"
+        android:layout_height="28dp"
+        android:text="J4 selecciona tu nombre"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerJ4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerJ3" />
 </androidx.constraintlayout.widget.ConstraintLayout>
