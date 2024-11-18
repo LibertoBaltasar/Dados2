@@ -1,4 +1,4 @@
-package com.example.dados2
+package com.example.dados2.pig
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.dados2.R
 import com.example.dados2.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

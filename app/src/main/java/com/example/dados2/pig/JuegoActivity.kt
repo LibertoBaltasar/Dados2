@@ -1,13 +1,13 @@
-package com.example.dados2
+package com.example.dados2.pig
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.dados2.R
 import com.example.dados2.databinding.ActivityJuegoBinding
 import kotlin.random.Random
 
@@ -18,6 +18,7 @@ class JuegoActivity : AppCompatActivity() {
     private var rondaActual: Int =1
     private var jugadorActual: Int =1
     private var puntosActuales: Int =0
+    private var listaJugadoresFinal: MutableList<Jugador> = mutableListOf()
     val listaJugadores: MutableList<String> = mutableListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +32,12 @@ class JuegoActivity : AppCompatActivity() {
         gestionarJugadores()
         gestionarPartida()
     }
+
     private fun ocultarJugadores() {
         binding.casilleroJ4.visibility = View.INVISIBLE
         binding.casilleroJ3.visibility = View.INVISIBLE
     }
+
     private fun gestionarJugadores(){
         ocultarJugadores()
         listaJugadores.add(intent.getStringExtra("nombreJ1") ?:"J1")
@@ -50,6 +53,7 @@ class JuegoActivity : AppCompatActivity() {
         }
         randomizarOrdenJugadores()
     }
+
     private fun randomizarOrdenJugadores(){
         var contador:Int=1
         do {
@@ -62,6 +66,7 @@ class JuegoActivity : AppCompatActivity() {
             contador++
         }while(listaJugadores.isNotEmpty())
     }
+
     private fun gestionarPartida(){
         binding.jugadorActual.text = jugadorActual.toString()
         binding.rondaActual.text = rondaActual.toString()
@@ -82,6 +87,7 @@ class JuegoActivity : AppCompatActivity() {
             pasarTurno(false)
         }
     }
+
     private fun pasarTurno(fallo:Boolean){
         if (fallo){
             puntosActuales=0
@@ -96,18 +102,23 @@ class JuegoActivity : AppCompatActivity() {
             rondaActual++
             if (rondaActual>numRondas){
                 finalizarPartida()
+                guardarJugadores()
+                irAActivityFinal()
             }
         }
 
         binding.jugadorActual.text = jugadorActual.toString()
         binding.rondaActual.text = rondaActual.toString()
         puntosActuales=0
+
     }
+
     private fun actualizarPuntuacionFinal(){
         val cellId = resources.getIdentifier("puntuacionFinalJ${jugadorActual}", "id", packageName)
         val cellView = binding.casillero.findViewById<TextView>(cellId)
         cellView?.text = ((cellView?.text.toString().toIntOrNull()?:0)+puntosActuales).toString()
     }
+
     private fun finalizarPartida() {
         Toast.makeText(this@JuegoActivity, "Has terminado la partida", Toast.LENGTH_SHORT).show()
         binding.imagenDado.visibility= View.INVISIBLE
@@ -123,6 +134,7 @@ class JuegoActivity : AppCompatActivity() {
         }
         binding.mensajeVictoria.visibility= View.VISIBLE
     }
+
     private fun seleccionarGanador(): String {
         val puntuaciones = mutableListOf<Int>(
             binding.puntuacionFinalJ1.text.toString().toIntOrNull() ?: 0,
@@ -157,20 +169,50 @@ class JuegoActivity : AppCompatActivity() {
 
     private fun seleccionarDado(opcion: Int) {
         when (opcion) {
-            1 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dado1))
-            2 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dado2))
-            3 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dado3))
-            4 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dado4))
-            5 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dado5))
-            6 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.dado6))
+            1 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this,
+                R.drawable.dado1
+            ))
+            2 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this,
+                R.drawable.dado2
+            ))
+            3 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this,
+                R.drawable.dado3
+            ))
+            4 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this,
+                R.drawable.dado4
+            ))
+            5 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this,
+                R.drawable.dado5
+            ))
+            6 -> binding.imagenDado.setImageDrawable(ContextCompat.getDrawable(this,
+                R.drawable.dado6
+            ))
         }
     }
 
     private fun tirarDado(): Int {
         return generarNumAleatorio(1,7)
     }
+
     private fun generarNumAleatorio(inicio: Int,fin:Int): Int {
         return Random.nextInt(inicio, fin)
+    }
+
+    private fun guardarJugadores(){
+        for (i in 1..numJugadores){
+            val cellId = resources.getIdentifier("nomJ${i}", "id", packageName)
+            val cellView = binding.casillero.findViewById<TextView>(cellId)
+            val cellIdPun = resources.getIdentifier("puntuacionFinalJ${i}", "id", packageName)
+            val cellViewPun = binding.casillero.findViewById<TextView>(cellIdPun)
+            val jugador = Jugador(cellView?.text.toString(),cellViewPun?.text.toString().toIntOrNull()?:0)
+            listaJugadoresFinal.add(jugador)
+        }
+    }
+
+    private fun irAActivityFinal() {
+        val intent = Intent(this, ActivityFinal::class.java)
+        intent.putExtra("listaJugadoresFinal", ArrayList(listaJugadoresFinal))
+        startActivity(intent)
     }
 
 }
