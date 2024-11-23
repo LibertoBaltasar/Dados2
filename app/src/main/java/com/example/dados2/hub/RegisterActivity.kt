@@ -1,30 +1,49 @@
 package com.example.dados2.hub
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.dados2.R
+import com.example.dados2.basedatos.AppDatabase
+
 import com.example.dados2.databinding.ActivityRegisterBinding
-import java.time.LocalDate
-import java.time.Period
-import java.time.format.DateTimeFormatter
+
+import java.util.Calendar
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        gestionarDatePicker()
         binding.confirmarButton.setOnClickListener {
             if(controlDatos()) {
-                registrar()
+                finalizarRegistro()
             }
+        }
+    }
+
+    private fun gestionarDatePicker() {
+        binding.editTextFecha.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val datePickerDialog = DatePickerDialog(
+                this,
+                { _, selectedYear, selectedMonth, selectedDay ->
+                    val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                    binding.editTextFecha.setText(selectedDate)
+                },
+                year,
+                month,
+                day
+            )
+            datePickerDialog.show()
         }
     }
 
@@ -48,8 +67,15 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun controlExiste(): Boolean {
-        //TODO: Comprobar que el usuario no existe en la base de datos
-        return true
+        val userDao = AppDatabase.getInstance(applicationContext).userDao()
+        val count = userDao.countByName(binding.nombreIntroducido.text.toString())
+        if(count>0){
+            Toast.makeText(this,"El usuario ya existe", Toast.LENGTH_SHORT).show()
+            return false
+        }else{
+            return true
+        }
+
     }
 
     private fun controlAceptacion(): Boolean {
@@ -58,11 +84,26 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun controlFechaNacimiento(): Boolean {
-        //TODO: Comprobar que la fecha de nacimiento es válida
-        return true
+        val fechaNacimiento = binding.editTextFecha.text.toString()
+        if (fechaNacimiento.isNotEmpty()) {
+            val parts = fechaNacimiento.split("/")
+            if (parts.size == 3) {
+                val day = parts[0].toInt()
+                val month = parts[1].toInt()
+                val year = parts[2].toInt()
+                val birthDate = Calendar.getInstance().apply {
+                    set(year, month - 1, day)
+                }
+                val today = Calendar.getInstance()
+                var age = today.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR)
+                if (today.get(Calendar.DAY_OF_YEAR) < birthDate.get(Calendar.DAY_OF_YEAR)) {
+                    age--
+                }
+                return age >= 16
+            }
+        }
+        return false
     }
-
-
 
     private fun controlPassword(): Boolean {
         val password = binding.passwordIntroducido.text.toString()
@@ -79,13 +120,16 @@ class RegisterActivity : AppCompatActivity() {
         return  false
     }
 
-
-    private fun registrar() {
-        var user=User(0,binding.nombreIntroducido.text.toString(),binding.passwordIntroducido.text.toString(),binding.editTextDate.text.toString())
+    private fun finalizarRegistro() {
+        var user=User(0,binding.nombreIntroducido.text.toString(),binding.passwordIntroducido.text.toString(),binding.editTextFecha.text.toString())
         Toast.makeText(this,user.firstName +user.password+user.fechaNacimiento, Toast.LENGTH_SHORT)
-        //TODO: Registrar el usuario en la base de datos
-        //TODO:mandar a siguiente pantalla
-        val intent = Intent(this, HUBActivity::class.java)
+        registrar(user)
+        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun registrar(user: User) {
+        val userDao = AppDatabase.getInstance(applicationContext).userDao()
+        userDao.insertUser(user)
     }
 }

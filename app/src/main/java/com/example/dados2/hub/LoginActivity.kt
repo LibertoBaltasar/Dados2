@@ -31,5 +31,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun validarDatos(): Boolean {
         //TODO: Implementar validación de datos
+        return true
     }
 }
