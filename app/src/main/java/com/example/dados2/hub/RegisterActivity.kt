@@ -8,9 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.dados2.basedatos.AppDatabase
 
 import com.example.dados2.databinding.ActivityRegisterBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 import java.util.Calendar
-
+//TODO: implementar mensajes de error en los controles de datos
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
 
@@ -68,17 +71,27 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun controlExiste(): Boolean {
         val userDao = AppDatabase.getInstance(applicationContext).userDao()
-        val count = userDao.countByName(binding.nombreIntroducido.text.toString())
-        if(count>0){
-            Toast.makeText(this,"El usuario ya existe", Toast.LENGTH_SHORT).show()
-            return false
-        }else{
-            return true
+        var usuarioExiste = false
+        CoroutineScope(Dispatchers.IO).launch {
+            val count = userDao.countByName(binding.nombreIntroducido.text.toString())
+            runOnUiThread {
+                if (count > 0) {
+                    Toast.makeText(this@RegisterActivity, "El usuario ya existe", Toast.LENGTH_SHORT).show()
+                    usuarioExiste = true
+                    binding.textNombre.text = "Error: El usuario ya existe"
+                }
+            }
         }
+        return !usuarioExiste
 
     }
 
     private fun controlAceptacion(): Boolean {
+        if (binding.checkBoxAceptacion.isChecked) {
+            return true
+        }else{
+            binding.textViewAceptacion.text="Error: Debe aceptar las condiciones"
+        }
         return binding.checkBoxAceptacion.isChecked
 
     }
@@ -102,6 +115,7 @@ class RegisterActivity : AppCompatActivity() {
                 return age >= 16
             }
         }
+        binding.textFecha.text = "Error: Debes tener más de 16 años"
         return false
     }
 
@@ -110,6 +124,7 @@ class RegisterActivity : AppCompatActivity() {
         if (password.length in 4..10 && password.any { it.isDigit() }) {
             return true
         }
+        binding.textPassword.text = "Error: La contraseña debe tener entre 4 y 10 caracteres y al menos un número"
         return false
     }
 
@@ -117,6 +132,7 @@ class RegisterActivity : AppCompatActivity() {
         if(binding.nombreIntroducido.text.toString().length>=4&&binding.nombreIntroducido.text.toString().length<=10) {
             return true
         }
+        binding.textNombre.text="Error: El nombre debe tener entre 4 y 10 caracteres"
         return  false
     }
 
@@ -130,6 +146,8 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun registrar(user: User) {
         val userDao = AppDatabase.getInstance(applicationContext).userDao()
-        userDao.insertUser(user)
+        CoroutineScope(Dispatchers.IO).launch {
+            userDao.insertUser(user)
+        }
     }
 }
