@@ -64,6 +64,7 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     usuarioValido = true
                     val intent = Intent(this@LoginActivity, HUBActivity::class.java)
+                    intent.putExtra("usuario", nombreAValidar)
                     startActivity(intent)
                 }
             }

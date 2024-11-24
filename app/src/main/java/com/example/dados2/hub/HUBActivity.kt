@@ -17,6 +17,7 @@ class HUBActivity : AppCompatActivity() {
         setContentView(R.layout.activity_hubactivity)
         binding = ActivityHubactivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.textViewUsuario.text = intent.getStringExtra("usuario")
         lanzarPigGame()
     }
     private fun lanzarPigGame() {
