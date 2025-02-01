@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Dados2</string>
+    <string name="title_activity_camara">CamaraActivity</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="start_capture">Start Capture</string>
+    <string name="stop_capture">Stop Capture</string>
+    <string name="title_activity_gallery">GalleryActivity</string>
+    <string name="title_activity_camara_menu">CamaraMenu</string>
+    <string name="title_activity_video_playerr">VideoPlayerrActivity</string>
+    <string name="title_activity_video_player">VideoPlayerActivity</string>
 </resources>

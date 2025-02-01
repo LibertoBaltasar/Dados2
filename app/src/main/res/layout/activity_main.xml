@@ -35,7 +35,7 @@
         android:id="@+id/textoSeleccionRondas"
         android:layout_width="175dp"
         android:layout_height="67dp"
-        android:text="Escribe el número de roondas que queráis jugar"
+        android:text="Escribe el número de rondas que queráis jugar"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/seleccionRondas"
         app:layout_constraintEnd_toEndOf="parent"
