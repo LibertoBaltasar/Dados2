@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dados2.basedatos.AppDatabase
+import com.example.dados2.basedatos.User
 import com.example.dados2.databinding.ActivityRegisterBinding
 import kotlinx.coroutines.*
 import java.util.Calendar

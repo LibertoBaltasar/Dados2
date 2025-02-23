@@ -1,4 +1,4 @@
-package com.example.dados2.hub
+package com.example.dados2.basedatos
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

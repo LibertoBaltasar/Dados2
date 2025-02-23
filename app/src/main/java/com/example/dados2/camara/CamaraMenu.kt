@@ -11,10 +11,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -78,26 +83,81 @@ class CamaraMenu : ComponentActivity() {
 @Composable
 fun CamaraMenu(usuario: String, modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    var mostrarDialogo by rememberSaveable { mutableStateOf(false) }
+    var mostrarDialogoGaleria by rememberSaveable { mutableStateOf(false) }
+
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(onClick = {
-            val intent = Intent(context, CamaraActivity::class.java).apply {
-                putExtra("usuario", usuario)
-            }
-            context.startActivity(intent)
+            mostrarDialogo=true
         }) {
             Text("Cámara")
         }
         Button(onClick = {
-            val intent = Intent(context, GalleryActivity::class.java).apply {
-                putExtra("usuario", usuario)
-            }
-            context.startActivity(intent)
+            mostrarDialogoGaleria=true
         }) {
             Text("Galería")
         }
+    }
+    if(mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text(text = "Guardar Archivos") },
+            text = { Text(text = "Donde quieres guardar los archivos") },
+            confirmButton = {
+                Button(onClick = {
+                    val intent = Intent(context, CamaraActivity::class.java).apply {
+                        putExtra("usuario", usuario)
+                    }
+                    context.startActivity(intent)
+                    mostrarDialogo=false
+                }) {
+                    Text("Guardar en carpeta personal")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    val intent = Intent(context, CamaraActivity::class.java).apply {
+                        putExtra("usuario", "comunes")
+                    }
+                    context.startActivity(intent)
+                    mostrarDialogo=false
+                }) {
+                    Text("Guardar en carpeta pública")
+                }
+            }
+        )
+    }
+    if(mostrarDialogoGaleria) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogoGaleria = false },
+            title = { Text(text = "Ver Archivos") },
+            text = { Text(text = "Donde quieres ver los archivos") },
+            confirmButton = {
+                Button(onClick = {
+                    val intent = Intent(context, GalleryActivity::class.java).apply {
+                        putExtra("usuario", usuario)
+                    }
+                    context.startActivity(intent)
+                    mostrarDialogoGaleria=false
+                }) {
+                    Text("Carpeta personal")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    val intent = Intent(context, GalleryActivity::class.java).apply {
+                        putExtra("usuario", "comunes")
+                    }
+                    context.startActivity(intent)
+                    mostrarDialogoGaleria=false
+                }) {
+                    Text("Carpeta pública")
+                }
+            }
+        )
     }
 }

@@ -12,7 +12,8 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
     <application
@@ -25,6 +26,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Dados2"
         tools:targetApi="31">
+        <activity
+            android:name=".bolita.BolitaJuegoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Dados2" />
+        <activity
+            android:name=".bolita.BolitaMenuActivity"
+            android:exported="false"
+            android:label="@string/title_activity_bolita_menu"
+            android:theme="@style/Theme.Dados2" />
+        <activity
+            android:name=".musica.ReproductorMusicaActivity"
+            android:exported="false"
+            android:label="@string/title_activity_reproductor_musica"
+            android:theme="@style/Theme.Dados2" />
         <activity
             android:name=".videoplayer.VideoPlayerActivity"
             android:exported="false"

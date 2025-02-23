@@ -1,7 +1,6 @@
 package com.example.dados2.basedatos
 
 import androidx.room.*
-import com.example.dados2.hub.User
 
 @Dao
 interface UserDao {

@@ -52,6 +52,9 @@ android {
 }
 
 dependencies {
+
+    implementation ("com.airbnb.android:lottie:6.6.2")
+    implementation ("com.airbnb.android:lottie-compose:6.0.0")
     implementation("androidx.camera:camera-core:1.1.0-beta01")
     implementation("androidx.camera:camera-camera2:1.1.0-beta01")
     implementation("androidx.camera:camera-lifecycle:1.1.0-beta01")
@@ -69,6 +72,9 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
+    implementation(libs.filament.android)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

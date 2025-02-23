@@ -17,13 +17,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.dados2.camara.obtenerArchivos
 import com.example.dados2.videoplayer.ui.theme.Dados2Theme
 
 class VideoPlayerSeleccionActivity : ComponentActivity() {
@@ -43,7 +51,11 @@ class VideoPlayerSeleccionActivity : ComponentActivity() {
 
 @Composable
 fun VideoPlayerSeleccion(modifier: Modifier = Modifier, contexto: Context, usuario: String) {
-    val videos = remember { obtenerVideosGrabados(contexto, usuario) }
+    val archivos = remember { mutableStateListOf<Uri>().apply { addAll(obtenerVideosGrabados(contexto, usuario)) } }
+    var videos = remember { obtenerVideosGrabados(contexto, usuario) }
+    var mostrarDialogo by rememberSaveable { mutableStateOf(false) }
+    var archivoAEliminar by rememberSaveable { mutableStateOf<Uri?>(null) }
+    var videoTrabajo by remember { mutableStateOf(Uri.EMPTY) }
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -55,13 +67,43 @@ fun VideoPlayerSeleccion(modifier: Modifier = Modifier, contexto: Context, usuar
                 modifier = Modifier
                     .padding(16.dp)
                     .clickable {
-                        val intent = Intent(contexto, VideoPlayerActivity::class.java).apply {
-                            putExtra("videoUri", video.toString())
-                        }
-                        contexto.startActivity(intent)
+                        archivoAEliminar=video
+                         videoTrabajo= video
+                        mostrarDialogo=true
                     }
             )
         }
+    }
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text(text = "Eliminar o Reproducir Archivo") },
+            text = { Text(text = "¿Qué quieres hacer con ${archivoAEliminar?.lastPathSegment}?") },
+            confirmButton = {
+                Button(onClick = {
+                    archivoAEliminar?.let {
+                        contexto.contentResolver.delete(it, null, null)
+                        archivos.remove(it)
+                    }
+                    mostrarDialogo = false
+                    archivoAEliminar = null
+                    videos= obtenerVideosGrabados(contexto,usuario)
+                }) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    val intent = Intent(contexto, VideoPlayerActivity::class.java).apply {
+                        putExtra("videoUri", videoTrabajo.toString())
+                    }
+                    contexto.startActivity(intent)
+                    mostrarDialogo = false
+                    archivoAEliminar = null}) {
+                    Text("Reproducir")
+                }
+            }
+        )
     }
 }
 
