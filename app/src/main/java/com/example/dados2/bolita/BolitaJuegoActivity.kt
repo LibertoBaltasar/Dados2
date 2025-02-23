@@ -12,7 +12,6 @@ class BolitaJuegoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         val nombre = intent.getStringExtra("nombre") ?: "defaultName"
         gameView = GameView(nombre, this)
         setContentView(gameView)

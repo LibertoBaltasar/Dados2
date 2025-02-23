@@ -20,6 +20,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.random.Random
+import android.media.SoundPool
+import android.media.AudioAttributes
+import com.example.dados2.R
 
 class GameView(private val nombre: String, context: Context, attrs: AttributeSet? = null) : ConstraintLayout(context, attrs), SurfaceHolder.Callback, Runnable, View.OnTouchListener {
 
@@ -39,6 +42,10 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
     private var playPauseButton: Button
     private var scoreTextView: TextView
     private var surfaceView: SurfaceView
+
+    private lateinit var soundPool: SoundPool
+    private var musicId: Int = 0
+    private var musicStreamId: Int = 0
 
     init {
         // Inicializar el SurfaceView
@@ -109,6 +116,17 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
         constraintSet.connect(scoreTextView.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 16)
 
         constraintSet.applyTo(this)
+
+        // Inicializar SoundPool
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .setAudioAttributes(audioAttributes)
+            .build()
+        musicId = soundPool.load(context, R.raw.gamemusic, 1)
     }
 
     override fun onTouch(view: View?, event: MotionEvent?): Boolean {
@@ -207,6 +225,7 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
     fun pause() {
         playing = false
         gameThread.join()
+        soundPool.stop(musicStreamId)
     }
 
     fun resume() {
@@ -218,11 +237,12 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
         gameThread = Thread(this)
         gameThread.start()
         Log.d("GameView", "Game resumed")
-
+        musicStreamId = soundPool.play(musicId, 1f, 1f, 1, -1, 1f)
     }
     private fun endGame(nombre: String) {
         playing = false
         gameThread.join()
+        soundPool.stop(musicStreamId)
         actualizarPuntuacion()
         val intent = Intent(context, BolitaMenuActivity::class.java)
         intent.putExtra("nombre",nombre)
