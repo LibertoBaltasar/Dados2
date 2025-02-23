@@ -46,6 +46,8 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
     private lateinit var soundPool: SoundPool
     private var musicId: Int = 0
     private var musicStreamId: Int = 0
+    private var speedMultiplier = 1
+
 
     init {
         // Inicializar el SurfaceView
@@ -157,7 +159,7 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
             }
         }
         if (balls.isEmpty()) {
-            initializeBalls(increaseSpeed = true)
+            initializeBalls()
         }
     }
 
@@ -270,18 +272,18 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
         }
     }
 
-    private fun initializeBalls(increaseSpeed: Boolean = false) {
+    private fun initializeBalls() {
         balls.clear()
         val numBalls = Random.nextInt(3, 7)
         for (i in 0 until numBalls) {
             val radius = Random.nextInt(10, 30).toFloat()
-            val speedMultiplier = if (increaseSpeed) 2 else 1
             val dx = (Random.nextFloat() * 4 + 1) * speedMultiplier
             val dy = (Random.nextFloat() * 4 + 1) * speedMultiplier
             val color = Color.rgb(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
             val paint = Paint().apply { this.color = color }
             balls.add(Ball(x = Random.nextFloat() * width, y = Random.nextFloat() * height, dx = dx, dy = dy, radius = radius, paint = paint))
         }
+        speedMultiplier++
     }
 
     inner class Ball(var x: Float, var y: Float, var dx: Float = 5f, var dy: Float = 5f, val radius: Float = squareSize / 2 + 10, val paint: Paint = Paint()) {
