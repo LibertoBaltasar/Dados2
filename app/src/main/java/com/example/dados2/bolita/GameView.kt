@@ -24,6 +24,7 @@ import android.media.SoundPool
 import android.media.AudioAttributes
 import com.example.dados2.R
 
+
 class GameView(private val nombre: String, context: Context, attrs: AttributeSet? = null) : ConstraintLayout(context, attrs), SurfaceHolder.Callback, Runnable, View.OnTouchListener {
 
     private lateinit var gameThread: Thread
@@ -38,12 +39,15 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
     private var squares: Array<Array<String>>? = null
     private var initializedBalls = false
 
+    private var toquesIleso=0
+
+    private var bolasRotas = 0
     private var endGameButton: Button
     private var playPauseButton: Button
     private var scoreTextView: TextView
     private var surfaceView: SurfaceView
 
-    private lateinit var soundPool: SoundPool
+    private var soundPool: SoundPool
     private var musicId: Int = 0
     private var musicStreamId: Int = 0
     private var speedMultiplier = 1
@@ -64,7 +68,7 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
         // Inicializar el botón de PLAY/PAUSE y el TextView del puntaje
         playPauseButton = Button(context).apply {
             id = View.generateViewId() // Asignar ID
-            text = "PLAY"
+            text = "PAUSE"
             setOnClickListener {
                 if (playing) {
                     pause()
@@ -140,6 +144,7 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
                 it.dx = (5 * Math.cos(angle)).toFloat()
                 it.dy = (5 * Math.sin(angle)).toFloat()
             }
+            toquesIleso++
         }
         return true
     }
@@ -155,10 +160,17 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
                     score += otherBall.radius.toInt()
                     balls.removeAt(i)
                     invalidate()
+                    bolasRotas++
+                    toquesIleso=0
+                    Log.d("Puntuacion", "Reinicio")
                 }
             }
         }
         if (balls.isEmpty()) {
+            val colorBolaPaint= arrayListOf(Color.RED,Color.BLUE,Color.GREEN,Color.YELLOW,Color.MAGENTA,Color.CYAN)
+            ballMainPaint.color = colorBolaPaint.random()
+            //TODO Modificar el radio de la bola
+            ball.radius+=40
             initializeBalls()
         }
     }
@@ -175,6 +187,11 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
         ball1?.updatePosition(true)
         balls.forEach { it.updatePosition(false) }
         ball1?.let { checkCollisionWithList(it, balls) }
+        if(toquesIleso==5){
+            Log.d("Puntuacion", "Sumado extra no toca")
+            score+=100
+            toquesIleso=0
+        }
     }
 
     private fun draw() {
@@ -260,6 +277,12 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
                 if (score > jugador.puntajeMax) {
                     jugador.puntajeMax = score
                 }
+                if(score>=500){
+                    jugador.imparable=true
+                }
+                if(bolasRotas>=5){
+                    jugador.destructor=true
+                }
                 val rowsUpdated = jugadorDao.updateJugador(jugador)
                 if (rowsUpdated > 0) {
                     Log.d("GameView", "Jugador actualizado correctamente: $nombre")
@@ -276,6 +299,7 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
         balls.clear()
         val numBalls = Random.nextInt(3, 7)
         for (i in 0 until numBalls) {
+            //TODO: Cambiar el radio de las bolas
             val radius = Random.nextInt(10, 30).toFloat()
             val dx = (Random.nextFloat() * 4 + 1) * speedMultiplier
             val dy = (Random.nextFloat() * 4 + 1) * speedMultiplier
@@ -286,7 +310,7 @@ class GameView(private val nombre: String, context: Context, attrs: AttributeSet
         speedMultiplier++
     }
 
-    inner class Ball(var x: Float, var y: Float, var dx: Float = 5f, var dy: Float = 5f, val radius: Float = squareSize / 2 + 10, val paint: Paint = Paint()) {
+    inner class Ball(var x: Float, var y: Float, var dx: Float = 5f, var dy: Float = 5f, var radius: Float = squareSize / 2 + 10, val paint: Paint = Paint()) {
         fun updatePosition(redBall: Boolean) {
             x += dx
             y += dy

@@ -9,5 +9,7 @@ data class Jugador (
     @PrimaryKey(autoGenerate = true) val id: Int=0,
     @ColumnInfo(name = "nombre")var nombre: String?,
     @ColumnInfo(name = "puntajeMax")var puntajeMax: Int,
-    @ColumnInfo(name = "puntajeAcumulado")var puntajeAcumulado: Int
+    @ColumnInfo(name = "puntajeAcumulado")var puntajeAcumulado: Int,
+    @ColumnInfo(name = "destructor")var destructor: Boolean,
+    @ColumnInfo(name = "imparable")var imparable: Boolean,
 )

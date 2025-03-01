@@ -27,6 +27,8 @@ class BolitaMenuActivity : ComponentActivity() {
     private lateinit var jugador: String
     private var puntajeMaximo: Int = 0
     private var puntajeAcumulado: Int = 0
+    private var destructor: Boolean = false
+    private var imparable: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +43,7 @@ class BolitaMenuActivity : ComponentActivity() {
         setContent {
             Dados2Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    bolitaMenuScreen(jugador, puntajeMaximo, puntajeAcumulado, this) {
+                    bolitaMenuScreen(jugador, puntajeMaximo, puntajeAcumulado, destructor,imparable, this) {
                         insertarJugador(jugador, puntajeMaximo, puntajeAcumulado)
                     }
                 }
@@ -56,6 +58,8 @@ class BolitaMenuActivity : ComponentActivity() {
             jugador?.let {
                 puntajeMaximo = it.puntajeMax
                 puntajeAcumulado = it.puntajeAcumulado
+                destructor = it.destructor
+                imparable = it.imparable
             }
         }
     }
@@ -65,7 +69,7 @@ class BolitaMenuActivity : ComponentActivity() {
             val jugadorExistente = AppDatabase.getInstance(this@BolitaMenuActivity).jugadorDao().findByName(jugador)
             if (jugadorExistente == null) {
                 AppDatabase.getInstance(this@BolitaMenuActivity).jugadorDao().insertJugador(
-                    jugador = Jugador(nombre = jugador, puntajeMax = puntajeMaximo, puntajeAcumulado = puntajeAcumulado)
+                    jugador = Jugador(nombre = jugador, puntajeMax = puntajeMaximo, puntajeAcumulado = puntajeAcumulado, destructor = false, imparable = false)
                 )
             }
         }
@@ -77,6 +81,8 @@ fun bolitaMenuScreen(
     jugador: String,
     puntajeMaximo: Int,
     puntajeAcumulado: Int,
+    destructor:Boolean,
+    imparable:Boolean,
     context: Context,
     onPlayButtonClick: () -> Unit
 ) {
@@ -88,6 +94,12 @@ fun bolitaMenuScreen(
         Text(text = "Jugador: $jugador")
         Text(text = "Puntaje máximo: $puntajeMaximo")
         Text(text = "Puntaje acumulado: $puntajeAcumulado")
+        if (imparable) {
+            Text(text = "¡Eres imparable!")
+        }
+        if (destructor) {
+            Text(text = "¡Eres destructor!")
+        }
         Button(onClick = {
             onPlayButtonClick()
             val intent = Intent(context, BolitaJuegoActivity::class.java)
